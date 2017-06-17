@@ -1,0 +1,63 @@
+{
+  "name": "evernote-dump",
+  "version": "0.0.0-beta",
+  "description": "Dump all your Evernote notes to your computer",
+  "main": "js/index.js",
+  "typings": "js/index.d.ts",
+  "scripts": {
+    "postinstall": "typings install",
+    "preversion": "npm run compile && npm test",
+    "precompile": "npm run clean",
+    "compile": "tsc",
+    "test": "env NODE_ENV=test mocha js/tests",
+    "clean": "del-cli js/",
+    "lin-1t": "tslint 'ts/**/*.ts?(x)' || exit 1",
+    "lint": "tslint 'ts/**/*.ts?(x)' || exit 0",
+    "dump": "npm run compile && node js/dump.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoseMariaMoreno/evernote-dump.git"
+  },
+  "keywords": [
+    "typescript",
+    "npm",
+    "module",
+    "package",
+    "base",
+    "skeleton",
+    "scaffold",
+    "boilerplate"
+  ],
+  "author": "José María Moreno <josemaria.morenoterren@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JoseMariaMoreno/evernote-dump.git/issues"
+  },
+  "homepage": "https://github.com/JoseMariaMoreno/evernote-dump.git#readme",
+  "engines": {
+    "node": ">=4.1.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-string": "^1.2.0",
+    "del-cli": "^0.2.0",
+    "ghooks": "^1.2.4",
+    "mocha": "^2.5.3",
+    "tslint": "^3.12.1",
+    "tslint-microsoft-contrib": "^2.0.8",
+    "typescript": "^1.8.10",
+    "typings": "^1.3.1"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run lint"
+    }
+  },
+  "dependencies": {
+    "evernote": "^2.0.1-beta",
+    "log4js": "^1.1.1",
+    "path": "^0.12.7",
+    "rimraf": "^2.6.1"
+  }
+}
