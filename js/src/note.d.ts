@@ -14,6 +14,8 @@ export declare class Note extends Storage {
     getTags(): Promise<any>;
     create(): Promise<Note>;
     getContentFilePathAndName(): string;
+    getContentTextFilePathAndName(): string;
+    getContentHTMLFilePathAndName(): string;
     getContent(): Promise<any>;
     saveContent(): Promise<any>;
 }

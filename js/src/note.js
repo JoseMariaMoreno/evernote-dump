@@ -2,6 +2,7 @@
 const storage_1 = require('./storage');
 let path = require('path');
 let fs = require('fs');
+let enml = require('enml-js');
 class Note extends storage_1.Storage {
     constructor(notebook, data) {
         super();
@@ -64,7 +65,13 @@ class Note extends storage_1.Storage {
         });
     }
     getContentFilePathAndName() {
-        return path.join(this.path, 'content-' + this.getFileName());
+        return path.join(this.path, 'content-' + this.getFileName() + '.enml');
+    }
+    getContentTextFilePathAndName() {
+        return path.join(this.path, 'content-text-' + this.getFileName() + '.txt');
+    }
+    getContentHTMLFilePathAndName() {
+        return path.join(this.path, 'content-html-' + this.getFileName() + '.html');
     }
     getContent() {
         let self = this;
@@ -89,7 +96,19 @@ class Note extends storage_1.Storage {
                         return reject(err);
                     }
                     self.app.log.debug(self.content);
-                    resolve(self.content);
+                    fs.writeFile(this.getContentTextFilePathAndName(), enml.PlainTextOfENML(self.content), (err) => {
+                        if (err) {
+                            return reject(err);
+                        }
+                        self.app.log.debug(self.content);
+                        fs.writeFile(this.getContentHTMLFilePathAndName(), enml.HTMLOfENML(self.content), (err) => {
+                            if (err) {
+                                return reject(err);
+                            }
+                            self.app.log.debug(self.content);
+                            resolve(self.content);
+                        });
+                    });
                 });
             }
             catch (err) {

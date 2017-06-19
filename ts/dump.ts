@@ -1,3 +1,8 @@
+/**
+ * Dump all notebooks and notes to local path
+ * By José María Moreno
+ */
+
 import { EvernoteApp } from './src/evernote-app';
 import { Notebook } from './src/notebook';
 import { Note } from './src/note';

@@ -8,20 +8,22 @@ app.initialize().then(() => {
         app.saveAllNotebooks().then(() => {
             app.log.debug('Notebooks data saved to files');
         });
-        app.getNotebookByName('Contabilidad').getNotes().then((notes) => {
-            notes.forEach((note) => {
-                note.initialize()
-                    .then(() => note.save())
-                    .then(() => note.getContent())
-                    .then(() => note.saveContent())
-                    .then(() => {
-                    app.log.debug(note.title, 'saved');
-                }).catch((err) => {
-                    app.log.error(err);
+        app.notebooks.forEach((notebook) => {
+            notebook.getNotes().then((notes) => {
+                notes.forEach((note) => {
+                    note.initialize()
+                        .then(() => note.save())
+                        .then(() => note.getContent())
+                        .then(() => note.saveContent())
+                        .then(() => {
+                        app.log.debug(note.title, 'saved');
+                    }).catch((err) => {
+                        app.log.error(err);
+                    });
                 });
+            }).catch((err) => {
+                app.log.error(err);
             });
-        }).catch((err) => {
-            app.log.error(err);
         });
     });
 }).catch((err) => {

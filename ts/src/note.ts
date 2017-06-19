@@ -1,13 +1,22 @@
+/**
+ * Note object that save all its data to local files
+ * By José María Moreno
+ */
+
 import { Storage } from './storage';
 import { Notebook } from './notebook';
 import { EvernoteApp } from './evernote-app';
 
 let path = require( 'path' );
 let fs = require( 'fs' );
+let enml = require( 'enml-js' );
 
 export class Note extends Storage {
 
+  // Public objects
   public data: any;
+
+  // Private objects
   private notebook: Notebook;
   private app: EvernoteApp;
   private guid: string;
@@ -31,6 +40,10 @@ export class Note extends Storage {
     return this.notebook;
   }
 
+  /**
+   * Get note title
+   * @returns {string}
+   */
   public get title(): string {
     return this.data.title;
   }
@@ -42,7 +55,6 @@ export class Note extends Storage {
   public get name(): string {
     return this.title + '.' + this.guid;
   }
-
 
   /**
    * Download all this notebook attachments from Evernote
@@ -75,6 +87,10 @@ export class Note extends Storage {
     } )
   }
 
+  /**
+   * Create a new Evernote note
+   * @returns {Promise<T>}
+   */
   public create(): Promise<Note> {
     let self = this;
     return new Promise( ( resolve, reject ) => {
@@ -109,11 +125,29 @@ export class Note extends Storage {
    * @returns {string}
    */
   public getContentFilePathAndName(): string {
-    return path.join( this.path, 'content-' + this.getFileName() );
+    return path.join( this.path, 'content-' + this.getFileName() + '.enml' );
   }
 
+  /**
+   * Return the content text file path
+   * @returns {string}
+   */
+  public getContentTextFilePathAndName(): string {
+    return path.join( this.path, 'content-text-' + this.getFileName() + '.txt' );
+  }
 
+  /**
+   * Return the content html file path
+   * @returns {string}
+   */
+  public getContentHTMLFilePathAndName(): string {
+    return path.join( this.path, 'content-html-' + this.getFileName() + '.html' );
+  }
 
+  /**
+   * Get the note content in ENML format
+   * @returns {Promise<T>}
+   */
   public getContent(): Promise<any> {
     let self = this;
     return new Promise( ( resolve, reject ) => {
@@ -132,6 +166,10 @@ export class Note extends Storage {
     });
   }
 
+  /**
+   * Save content
+   * @returns {Promise<T>}
+   */
   public saveContent(): Promise<any> {
     let self = this;
     return new Promise( ( resolve, reject ) => {
@@ -142,7 +180,21 @@ export class Note extends Storage {
               return reject( err );
             }
             self.app.log.debug( self.content );
-            resolve( self.content );
+
+            fs.writeFile( this.getContentTextFilePathAndName(), enml.PlainTextOfENML( self.content ), ( err: any ) => {
+              if ( err ) {
+                return reject( err );
+              }
+              self.app.log.debug( self.content );
+              fs.writeFile( this.getContentHTMLFilePathAndName(), enml.HTMLOfENML( self.content ), ( err: any ) => {
+                if ( err ) {
+                  return reject( err );
+                }
+                self.app.log.debug( self.content );
+                resolve( self.content );
+              } );
+            } );
+
           } );
 
       } catch( err ) {

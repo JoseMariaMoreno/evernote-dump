@@ -1,5 +1,7 @@
-import { EvernoteApp } from './evernote-app';
-
+/**
+ * File Storage class, inherited in other classe in order to save Evernote data in local files
+ * Override if you want to save, i.e., to a database
+ */
 
 let path = require( 'path' );
 let fs = require( 'fs' );
@@ -31,6 +33,10 @@ export class Storage {
 
   }
 
+  /**
+   * Creates the local folder
+   * @returns {Promise<T>}
+   */
   public initialize(): Promise<any> {
     var self = this;
     return new Promise( ( resolve, reject ) => {
@@ -57,22 +63,42 @@ export class Storage {
 
   }
 
+  /**
+   * Returns the parent object, among other thinks, to get the parent path folder
+   * @returns {Storage}
+   */
   public getParent(): any {
     return this;
   }
 
+  /**
+   * Returns the entity name, override in other classes
+   * @returns {string}
+   */
   public get name(): string {
     return 'storage-class';
   }
 
+  /**
+   * Get the folder path, overrided in other classes
+   * @returns {string}
+   */
   public get path(): string {
     return path.join( this.getParent().path, this.textToFileName( this.name ) );
   }
 
+  /**
+   * Returns the data object in text format, to save to local file.
+   * @returns {string}
+   */
   public getDataToSave(): string {
     return JSON.stringify( this.data, null, 2 );
   }
 
+  /**
+   * Save data to file
+   * @returns {Promise<T>}
+   */
   public save(): Promise<any> {
     return new Promise( ( resolve, reject ) => {
       try {
@@ -88,20 +114,35 @@ export class Storage {
     } );
   }
 
+  /**
+   * Set de data object
+   * @param data
+   */
   public setData( data: any ): void {
     this.data = data;
   }
 
-
+  /**
+   * Returns the file name
+   * @returns {string|string}
+   */
   public getFileName(): string {
     return this.textToFileName( this.name ) || 'no-file-name';
   }
 
+  /**
+   * Returne the path and the file name
+   * @returns {string}
+   */
   public getFilePathAndName(): string {
     return path.join( this.path, this.getFileName() );
   }
 
-
+  /**
+   * Replace non-valid chars from a file name
+   * @param s
+   * @returns {string}
+   */
   private textNormalize( s: string ): string {
     let r = s.toLowerCase();
     r = r.replace( new RegExp( '[àáâãäå]', 'g' ), 'a' );
@@ -118,6 +159,11 @@ export class Storage {
     return r;
   };
 
+  /**
+   * Converts a string to chars used as a file name
+   * @param s
+   * @returns {string}
+   */
   private textToFileName( s: string ): string {
 
     let r = this.textNormalize( s );
