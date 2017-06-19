@@ -16,6 +16,7 @@ class Storage {
         this.log = log4js.getLogger('app');
     }
     initialize() {
+        var self = this;
         return new Promise((resolve, reject) => {
             try {
                 rimraf(this.path, (err) => {
@@ -27,7 +28,7 @@ class Storage {
                             this.log.error(err);
                         }
                         this.log.debug('Created folder', this.path);
-                        resolve();
+                        resolve(self);
                     });
                 });
             }
@@ -74,17 +75,17 @@ class Storage {
     }
     textNormalize(s) {
         let r = s.toLowerCase();
-        r = r.replace(new RegExp("[àáâãäå]", 'g'), "a");
-        r = r.replace(new RegExp("æ", 'g'), "ae");
-        r = r.replace(new RegExp("ç", 'g'), "c");
-        r = r.replace(new RegExp("[èéêë]", 'g'), "e");
-        r = r.replace(new RegExp("[ìíîï]", 'g'), "i");
-        r = r.replace(new RegExp("ñ", 'g'), "n");
-        r = r.replace(new RegExp("[òóôõö]", 'g'), "o");
-        r = r.replace(new RegExp("œ", 'g'), "oe");
-        r = r.replace(new RegExp("[ùúûü]", 'g'), "u");
-        r = r.replace(new RegExp("[ýÿ]", 'g'), "y");
-        r = r.replace("/", "");
+        r = r.replace(new RegExp('[àáâãäå]', 'g'), 'a');
+        r = r.replace(new RegExp('æ', 'g'), 'ae');
+        r = r.replace(new RegExp('ç', 'g'), 'c');
+        r = r.replace(new RegExp('[èéêë]', 'g'), 'e');
+        r = r.replace(new RegExp('[ìíîï]', 'g'), 'i');
+        r = r.replace(new RegExp('ñ', 'g'), 'n');
+        r = r.replace(new RegExp('[òóôõö]', 'g'), 'o');
+        r = r.replace(new RegExp('œ', 'g'), 'oe');
+        r = r.replace(new RegExp('[ùúûü]', 'g'), 'u');
+        r = r.replace(new RegExp('[ýÿ]', 'g'), 'y');
+        r = r.replace('/', '');
         return r;
     }
     ;

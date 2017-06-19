@@ -1,7 +1,7 @@
 "use strict";
 const evernote_app_1 = require('./src/evernote-app');
 const config = require('../config.json');
-let app = new evernote_app_1.EvernoteApp(config);
+const app = new evernote_app_1.EvernoteApp(config);
 app.initialize().then(() => {
     app.getNoteBooks().then(() => {
         app.log.debug('Notebooks count', app.notebooksCount);
@@ -10,7 +10,15 @@ app.initialize().then(() => {
         });
         app.getNotebookByName('Contabilidad').getNotes().then((notes) => {
             notes.forEach((note) => {
-                app.log.debug(note.title);
+                note.initialize()
+                    .then(() => note.save())
+                    .then(() => note.getContent())
+                    .then(() => note.saveContent())
+                    .then(() => {
+                    app.log.debug(note.title, 'saved');
+                }).catch((err) => {
+                    app.log.error(err);
+                });
             });
         }).catch((err) => {
             app.log.error(err);

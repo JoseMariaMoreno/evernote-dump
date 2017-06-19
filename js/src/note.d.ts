@@ -1,14 +1,19 @@
+import { Storage } from './storage';
 import { Notebook } from './notebook';
-export declare class Note {
-    private data;
+export declare class Note extends Storage {
+    data: any;
     private notebook;
     private app;
     private guid;
+    private content;
     constructor(notebook: Notebook, data: any);
+    getParent(): Notebook;
     title: string;
     name: string;
-    path: string;
     getAttachments(): Promise<any>;
-    getTabs(): Promise<any>;
+    getTags(): Promise<any>;
     create(): Promise<Note>;
+    getContentFilePathAndName(): string;
+    getContent(): Promise<any>;
+    saveContent(): Promise<any>;
 }

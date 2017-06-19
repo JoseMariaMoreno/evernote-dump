@@ -15,4 +15,5 @@ export declare class Notebook extends Storage {
     addNote(data: any): Promise<Note>;
     notesCount: number;
     getNoteCount(): Promise<any>;
+    saveAllNotes(): Promise<any>;
 }

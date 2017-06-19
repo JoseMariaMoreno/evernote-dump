@@ -70,6 +70,24 @@ class Notebook extends storage_1.Storage {
             });
         });
     }
+    saveAllNotes() {
+        let self = this;
+        return new Promise((resolve, reject) => {
+            try {
+                self.notes.forEach((note) => {
+                    note.save().then(() => {
+                        this.log.info(note.name, 'saved to disk');
+                    }).catch((err) => {
+                        this.log.error(err);
+                    });
+                });
+                resolve();
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
+    }
 }
 exports.Notebook = Notebook;
 //# sourceMappingURL=notebook.js.map

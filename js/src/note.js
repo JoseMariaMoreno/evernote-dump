@@ -1,27 +1,23 @@
 "use strict";
+const storage_1 = require('./storage');
 let path = require('path');
 let fs = require('fs');
-class Note {
+class Note extends storage_1.Storage {
     constructor(notebook, data) {
+        super();
         this.data = data;
         this.notebook = notebook;
         this.app = notebook.app;
         this.guid = data.guid || 'no-guid';
-        fs.mkdir(this.path, (err) => {
-            if (err) {
-                this.notebook.app.log.error(err);
-            }
-            this.notebook.app.log.debug('Created note folder', this.path, this.data);
-        });
+    }
+    getParent() {
+        return this.notebook;
     }
     get title() {
         return this.data.title;
     }
     get name() {
         return this.title + '.' + this.guid;
-    }
-    get path() {
-        return path.join(this.notebook.path, this.name);
     }
     getAttachments() {
         return new Promise((resolve, reject) => {
@@ -33,7 +29,7 @@ class Note {
             }
         });
     }
-    getTabs() {
+    getTags() {
         return new Promise((resolve, reject) => {
             try {
                 resolve();
@@ -63,6 +59,40 @@ class Note {
             }
             catch (err) {
                 self.app.log.error(err);
+                reject(err);
+            }
+        });
+    }
+    getContentFilePathAndName() {
+        return path.join(this.path, 'content-' + this.getFileName());
+    }
+    getContent() {
+        let self = this;
+        return new Promise((resolve, reject) => {
+            try {
+                this.app.noteStore().getNoteContent(self.guid).then((content) => {
+                    self.content = content;
+                    resolve(content);
+                }).catch(reject);
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
+    }
+    saveContent() {
+        let self = this;
+        return new Promise((resolve, reject) => {
+            try {
+                fs.writeFile(this.getContentFilePathAndName(), self.content, (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    self.app.log.debug(self.content);
+                    resolve(self.content);
+                });
+            }
+            catch (err) {
                 reject(err);
             }
         });

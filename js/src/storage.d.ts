@@ -1,6 +1,4 @@
-import { EvernoteApp } from './evernote-app';
 export declare class Storage {
-    app: EvernoteApp;
     data: any;
     log: any;
     private root;

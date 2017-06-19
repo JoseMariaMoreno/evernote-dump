@@ -8,7 +8,6 @@ let log4js = require( 'log4js' );
 
 export class Storage {
 
-  public app: EvernoteApp;
   public data: any;
   public log: any;
 
@@ -33,6 +32,7 @@ export class Storage {
   }
 
   public initialize(): Promise<any> {
+    var self = this;
     return new Promise( ( resolve, reject ) => {
       try {
         // Create the folder
@@ -45,7 +45,7 @@ export class Storage {
               this.log.error( err );
             }
             this.log.debug( 'Created folder', this.path );
-            resolve();
+            resolve( self );
           } );
         } )
 

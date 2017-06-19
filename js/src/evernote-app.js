@@ -2,7 +2,6 @@
 const notebook_1 = require('./notebook');
 const storage_1 = require('./storage');
 let Evernote = require('evernote');
-let log4js = require('log4js');
 let fs = require('fs');
 let path = require('path');
 class EvernoteApp extends storage_1.Storage {
