@@ -19,13 +19,17 @@ app.initialize().then( () => {
       app.log.debug( 'Notebooks data saved to files' );
     } );
 
-    app.notebooks.forEach( ( notebook: Notebook ) => {
+    app.notebooks
+      .filter( ( notebook: Notebook ) => {
+        return notebook.name == 'Contabilidad';
+      })
+      .forEach( ( notebook: Notebook ) => {
       notebook.getNotes().then( ( notes: Note[] ) => {
 
         notes.forEach( ( note: Note ) => {
           note.initialize()
+            .then( () => note.getNote() )
             .then( () => note.save() )
-            .then( () => note.getContent() )
             .then( () => note.saveContent() )
             .then( () => {
               app.log.debug( note.title, 'saved' );

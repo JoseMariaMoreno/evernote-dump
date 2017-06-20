@@ -5,11 +5,12 @@ export declare class Note extends Storage {
     private notebook;
     private app;
     private guid;
-    private content;
     constructor(notebook: Notebook, data: any);
     getParent(): Notebook;
     title: string;
     name: string;
+    getNote(): Promise<any>;
+    private getResource(resourceGuid);
     getAttachments(): Promise<any>;
     getTags(): Promise<any>;
     create(): Promise<Note>;

@@ -8,12 +8,16 @@ app.initialize().then(() => {
         app.saveAllNotebooks().then(() => {
             app.log.debug('Notebooks data saved to files');
         });
-        app.notebooks.forEach((notebook) => {
+        app.notebooks
+            .filter((notebook) => {
+            return notebook.name == 'Contabilidad';
+        })
+            .forEach((notebook) => {
             notebook.getNotes().then((notes) => {
                 notes.forEach((note) => {
                     note.initialize()
+                        .then(() => note.getNote())
                         .then(() => note.save())
-                        .then(() => note.getContent())
                         .then(() => note.saveContent())
                         .then(() => {
                         app.log.debug(note.title, 'saved');

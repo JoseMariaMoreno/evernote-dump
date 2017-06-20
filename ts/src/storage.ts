@@ -135,7 +135,7 @@ export class Storage {
    * @returns {string}
    */
   public getFilePathAndName(): string {
-    return path.join( this.path, this.getFileName() );
+    return path.join( this.path, this.getFileName() + '.json' );
   }
 
   /**

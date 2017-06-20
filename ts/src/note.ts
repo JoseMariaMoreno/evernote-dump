@@ -20,12 +20,11 @@ export class Note extends Storage {
   private notebook: Notebook;
   private app: EvernoteApp;
   private guid: string;
-  private content: Object;
 
   public constructor( notebook: Notebook, data: any ) {
     super();
 
-    this.data = data;
+    this.data = data || {};
     this.notebook = notebook;
     this.app = notebook.app;
     this.guid = data.guid || 'no-guid'; // TODO: Throw error
@@ -54,6 +53,44 @@ export class Note extends Storage {
    */
   public get name(): string {
     return this.title + '.' + this.guid;
+  }
+
+  public getNote(): Promise<any> {
+    let self = this;
+    return new Promise( ( resolve, reject ) => {
+      try {
+
+        self.app.noteStore().getNote(
+          self.guid,
+          true, // Content
+          false, // ResourcesData
+          true, // ResourcesRecognition
+          true // ResourcesAlternateData
+        ).then( ( data: any ) => {
+          self.data = data;
+          resolve( data );
+        } ).catch( reject );
+      } catch( err ) {
+        reject( err );
+      }
+    })
+  }
+
+  private getResource( resourceGuid: string ): Promise<any> {
+    let self = this;
+    return new Promise( ( resolve, reject ) => {
+      self.app.noteStore().getResource( resourceGuid, true, false, true, false, ( resource: any ) => {
+        let fileContent = resource.data.body;
+        let fileType = resource.mime;
+        let fileName = resource.attributes.fileName;
+      });
+      try {
+        resolve();
+      } catch( err ) {
+        reject( err );
+      }
+    })
+
   }
 
   /**
@@ -154,7 +191,7 @@ export class Note extends Storage {
       try {
         this.app.noteStore().getNoteContent( self.guid ).then( ( content: any ) => {
 
-          self.content = content;
+          self.data.content = content;
           resolve( content );
 
         }).catch( reject );
@@ -175,23 +212,23 @@ export class Note extends Storage {
     return new Promise( ( resolve, reject ) => {
       try {
 
-          fs.writeFile( this.getContentFilePathAndName(), self.content, ( err: any ) => {
+          fs.writeFile( this.getContentFilePathAndName(), self.data.content, ( err: any ) => {
             if ( err ) {
               return reject( err );
             }
-            self.app.log.debug( self.content );
+            self.app.log.debug( self.data.content );
 
-            fs.writeFile( this.getContentTextFilePathAndName(), enml.PlainTextOfENML( self.content ), ( err: any ) => {
+            fs.writeFile( this.getContentTextFilePathAndName(), enml.PlainTextOfENML( self.data.content ), ( err: any ) => {
               if ( err ) {
                 return reject( err );
               }
-              self.app.log.debug( self.content );
-              fs.writeFile( this.getContentHTMLFilePathAndName(), enml.HTMLOfENML( self.content ), ( err: any ) => {
+              self.app.log.debug( self.data.content );
+              fs.writeFile( this.getContentHTMLFilePathAndName(), enml.HTMLOfENML( self.data.content ), ( err: any ) => {
                 if ( err ) {
                   return reject( err );
                 }
-                self.app.log.debug( self.content );
-                resolve( self.content );
+                self.app.log.debug( self.data.content );
+                resolve( self.data.content );
               } );
             } );
 

@@ -71,7 +71,7 @@ class Storage {
         return this.textToFileName(this.name) || 'no-file-name';
     }
     getFilePathAndName() {
-        return path.join(this.path, this.getFileName());
+        return path.join(this.path, this.getFileName() + '.json');
     }
     textNormalize(s) {
         let r = s.toLowerCase();

@@ -6,7 +6,7 @@ let enml = require('enml-js');
 class Note extends storage_1.Storage {
     constructor(notebook, data) {
         super();
-        this.data = data;
+        this.data = data || {};
         this.notebook = notebook;
         this.app = notebook.app;
         this.guid = data.guid || 'no-guid';
@@ -19,6 +19,36 @@ class Note extends storage_1.Storage {
     }
     get name() {
         return this.title + '.' + this.guid;
+    }
+    getNote() {
+        let self = this;
+        return new Promise((resolve, reject) => {
+            try {
+                self.app.noteStore().getNote(self.guid, true, false, true, true).then((data) => {
+                    self.data = data;
+                    resolve(data);
+                }).catch(reject);
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
+    }
+    getResource(resourceGuid) {
+        let self = this;
+        return new Promise((resolve, reject) => {
+            self.app.noteStore().getResource(resourceGuid, true, false, true, false, (resource) => {
+                let fileContent = resource.data.body;
+                let fileType = resource.mime;
+                let fileName = resource.attributes.fileName;
+            });
+            try {
+                resolve();
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
     }
     getAttachments() {
         return new Promise((resolve, reject) => {
@@ -78,7 +108,7 @@ class Note extends storage_1.Storage {
         return new Promise((resolve, reject) => {
             try {
                 this.app.noteStore().getNoteContent(self.guid).then((content) => {
-                    self.content = content;
+                    self.data.content = content;
                     resolve(content);
                 }).catch(reject);
             }
@@ -91,22 +121,22 @@ class Note extends storage_1.Storage {
         let self = this;
         return new Promise((resolve, reject) => {
             try {
-                fs.writeFile(this.getContentFilePathAndName(), self.content, (err) => {
+                fs.writeFile(this.getContentFilePathAndName(), self.data.content, (err) => {
                     if (err) {
                         return reject(err);
                     }
-                    self.app.log.debug(self.content);
-                    fs.writeFile(this.getContentTextFilePathAndName(), enml.PlainTextOfENML(self.content), (err) => {
+                    self.app.log.debug(self.data.content);
+                    fs.writeFile(this.getContentTextFilePathAndName(), enml.PlainTextOfENML(self.data.content), (err) => {
                         if (err) {
                             return reject(err);
                         }
-                        self.app.log.debug(self.content);
-                        fs.writeFile(this.getContentHTMLFilePathAndName(), enml.HTMLOfENML(self.content), (err) => {
+                        self.app.log.debug(self.data.content);
+                        fs.writeFile(this.getContentHTMLFilePathAndName(), enml.HTMLOfENML(self.data.content), (err) => {
                             if (err) {
                                 return reject(err);
                             }
-                            self.app.log.debug(self.content);
-                            resolve(self.content);
+                            self.app.log.debug(self.data.content);
+                            resolve(self.data.content);
                         });
                     });
                 });
