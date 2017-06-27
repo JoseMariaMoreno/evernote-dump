@@ -1,5 +1,6 @@
 "use strict";
 const storage_1 = require('./storage');
+const resource_1 = require('./resource');
 let path = require('path');
 let fs = require('fs');
 let enml = require('enml-js');
@@ -34,31 +35,15 @@ class Note extends storage_1.Storage {
             }
         });
     }
-    getResource(resourceGuid) {
+    getResources() {
         let self = this;
-        return new Promise((resolve, reject) => {
-            self.app.noteStore().getResource(resourceGuid, true, false, true, false, (resource) => {
-                let fileContent = resource.data.body;
-                let fileType = resource.mime;
-                let fileName = resource.attributes.fileName;
-            });
-            try {
-                resolve();
-            }
-            catch (err) {
-                reject(err);
-            }
-        });
-    }
-    getAttachments() {
-        return new Promise((resolve, reject) => {
-            try {
-                resolve();
-            }
-            catch (err) {
-                reject(err);
-            }
-        });
+        let addResource = (resourceData) => {
+            let resource = new resource_1.Resource(self, resourceData);
+            return resource.initialize();
+        };
+        return Promise.all(self.data.resources.map((resource) => {
+            return addResource(resource);
+        }));
     }
     getTags() {
         return new Promise((resolve, reject) => {

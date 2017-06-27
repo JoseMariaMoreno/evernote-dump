@@ -5,6 +5,7 @@
 
 import { Storage } from './storage';
 import { Notebook } from './notebook';
+import { Resource } from './resource';
 import { EvernoteApp } from './evernote-app';
 
 let path = require( 'path' );
@@ -55,6 +56,10 @@ export class Note extends Storage {
     return this.title + '.' + this.guid;
   }
 
+  /**
+   * Get all note data from Evernote API
+   * @returns {Promise<T>}
+   */
   public getNote(): Promise<any> {
     let self = this;
     return new Promise( ( resolve, reject ) => {
@@ -76,36 +81,32 @@ export class Note extends Storage {
     })
   }
 
-  private getResource( resourceGuid: string ): Promise<any> {
-    let self = this;
-    return new Promise( ( resolve, reject ) => {
-      self.app.noteStore().getResource( resourceGuid, true, false, true, false, ( resource: any ) => {
-        let fileContent = resource.data.body;
-        let fileType = resource.mime;
-        let fileName = resource.attributes.fileName;
-      });
-      try {
-        resolve();
-      } catch( err ) {
-        reject( err );
-      }
-    })
-
-  }
-
   /**
-   * Download all this notebook attachments from Evernote
+   * Create instances of all this note resources from Evernote API
    * @returns {Promise<T>}
    */
-  public getAttachments(): Promise<any> {
-    return new Promise( ( resolve, reject ) => {
-      try {
-        resolve();
-      } catch ( err ) {
-        reject( err );
-      }
+  public getResources(): Promise<any> {
 
-    } )
+    let self = this;
+
+    /**
+     * method that returns the promise of initialize resource
+     * @param resourceData
+     * @returns {Promise<any>}
+     */
+    let addResource = ( resourceData: any ) => {
+      let resource = new Resource( self, resourceData );
+      return resource.initialize();
+    };
+
+    /**
+     * Initilialize all note resources
+     */
+    return Promise.all(
+      self.data.resources.map( ( resource: any ) => {
+        return addResource( resource );
+      })
+    );
   }
 
   /**

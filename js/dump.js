@@ -13,12 +13,13 @@ app.initialize().then(() => {
             return notebook.name == 'Contabilidad';
         })
             .forEach((notebook) => {
-            notebook.getNotes().then((notes) => {
+            notebook.getNotes({}, 38, 9999).then((notes) => {
                 notes.forEach((note) => {
                     note.initialize()
                         .then(() => note.getNote())
                         .then(() => note.save())
                         .then(() => note.saveContent())
+                        .then(() => note.getResources())
                         .then(() => {
                         app.log.debug(note.title, 'saved');
                     }).catch((err) => {

@@ -10,8 +10,7 @@ export declare class Note extends Storage {
     title: string;
     name: string;
     getNote(): Promise<any>;
-    private getResource(resourceGuid);
-    getAttachments(): Promise<any>;
+    getResources(): Promise<any>;
     getTags(): Promise<any>;
     create(): Promise<Note>;
     getContentFilePathAndName(): string;

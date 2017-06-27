@@ -100,9 +100,11 @@ export class Storage {
    * @returns {Promise<T>}
    */
   public save(): Promise<any> {
+    let self = this;
     return new Promise( ( resolve, reject ) => {
       try {
-        fs.writeFile( this.getFilePathAndName(), this.getDataToSave(), ( err: any ) => {
+        console.log( 'Creating', self.getFilePathAndName() );
+        fs.writeFile( self.getFilePathAndName(), self.getDataToSave(), ( err: any ) => {
           if ( err ) {
             return reject( err );
           }

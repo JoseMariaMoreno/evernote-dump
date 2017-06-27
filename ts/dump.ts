@@ -24,13 +24,14 @@ app.initialize().then( () => {
         return notebook.name == 'Contabilidad';
       })
       .forEach( ( notebook: Notebook ) => {
-      notebook.getNotes().then( ( notes: Note[] ) => {
+      notebook.getNotes( {}, 38, 9999 ).then( ( notes: Note[] ) => {
 
         notes.forEach( ( note: Note ) => {
           note.initialize()
             .then( () => note.getNote() )
             .then( () => note.save() )
             .then( () => note.saveContent() )
+            .then( () => note.getResources() )
             .then( () => {
               app.log.debug( note.title, 'saved' );
             }).catch( ( err: any ) => {

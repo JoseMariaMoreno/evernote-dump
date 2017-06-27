@@ -50,9 +50,11 @@ class Storage {
         return JSON.stringify(this.data, null, 2);
     }
     save() {
+        let self = this;
         return new Promise((resolve, reject) => {
             try {
-                fs.writeFile(this.getFilePathAndName(), this.getDataToSave(), (err) => {
+                console.log('Creating', self.getFilePathAndName());
+                fs.writeFile(self.getFilePathAndName(), self.getDataToSave(), (err) => {
                     if (err) {
                         return reject(err);
                     }
