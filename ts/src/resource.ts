@@ -70,8 +70,11 @@ export class Resource extends Storage {
           self.getApp().log.debug( self.resourceFileName, 'created' );
 
           // And call storage method to save the file
-          super.save().then( resolve ).catch( reject );
-
+          self.setSourceURL( self.getApp().webApiUrlPrefix + '/res/' + self.guid );
+          self.getApp().log.debug( 'Getting', self.getSourceURL() );
+          self.saveStream()
+            .then( () => resolve() )
+            .catch( ( err: any ) => reject( err ) );
         }).catch( reject );
 
       } catch( err ) {

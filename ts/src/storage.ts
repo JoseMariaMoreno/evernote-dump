@@ -7,6 +7,7 @@ let path = require( 'path' );
 let fs = require( 'fs' );
 let rimraf = require( 'rimraf' );
 let log4js = require( 'log4js' );
+let http = require( 'http' );
 
 export class Storage {
 
@@ -15,6 +16,7 @@ export class Storage {
 
   private root: string;
   private fileName: string;
+  private sourceURL: string;
 
   public type: string = 'File system';
 
@@ -117,6 +119,54 @@ export class Storage {
   }
 
   /**
+   * Returns a URL address
+   * @returns {string}
+   */
+  public getSourceURL(): string {
+    return this.sourceURL;
+  }
+
+  /**
+   * Set the source URL for downloading files with http stream
+   * @param url
+   */
+  public setSourceURL( url: string ): void {
+    this.sourceURL = url;
+  }
+
+  /**
+   * Save data to file with a stream
+   * @returns {Promise<T>}
+   */
+  public saveStream(): Promise<any> {
+    let self = this;
+    let destination = self.getFilePathAndName();
+    return new Promise( ( resolve, reject ) => {
+
+      try {
+
+        console.log( 'Streaming', destination );
+        let file = fs.createWriteStream( self.getFilePathAndName() );
+        let request = http.get( self.getSourceURL(), ( res: any ) => {
+          res.pipe( file );
+          file.on( 'finish', () => {
+            file.close( () => {
+              resolve();
+            });
+          });
+        } ).on( 'error', ( err: any ) => {
+          fs.unlink( destination );
+          reject( err );
+        });
+
+      } catch ( err ) {
+        reject( err );
+      }
+    } );
+  }
+
+
+  /**
    * Set de data object
    * @param data
    */
@@ -173,5 +223,7 @@ export class Storage {
     r = r.replace( new RegExp( "\\W", 'g' ), "-" );
     return r;
   };
+
+
 
 }

@@ -3,6 +3,7 @@ let path = require('path');
 let fs = require('fs');
 let rimraf = require('rimraf');
 let log4js = require('log4js');
+let http = require('http');
 class Storage {
     constructor() {
         this.type = 'File system';
@@ -59,6 +60,36 @@ class Storage {
                         return reject(err);
                     }
                     resolve();
+                });
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
+    }
+    getSourceURL() {
+        return this.sourceURL;
+    }
+    setSourceURL(url) {
+        this.sourceURL = url;
+    }
+    saveStream() {
+        let self = this;
+        let destination = self.getFilePathAndName();
+        return new Promise((resolve, reject) => {
+            try {
+                console.log('Streaming', destination);
+                let file = fs.createWriteStream(self.getFilePathAndName());
+                let request = http.get(self.getSourceURL(), (res) => {
+                    res.pipe(file);
+                    file.on('finish', () => {
+                        file.close(() => {
+                            resolve();
+                        });
+                    });
+                }).on('error', (err) => {
+                    fs.unlink(destination);
+                    reject(err);
                 });
             }
             catch (err) {

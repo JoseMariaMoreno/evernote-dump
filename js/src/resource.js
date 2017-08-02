@@ -30,7 +30,11 @@ class Resource extends storage_1.Storage {
                     self.resourceFileType = resource.mime;
                     self.resourceFileName = resource.attributes.fileName;
                     self.getApp().log.debug(self.resourceFileName, 'created');
-                    super.save().then(resolve).catch(reject);
+                    self.setSourceURL(self.getApp().webApiUrlPrefix + '/res/' + self.guid);
+                    self.getApp().log.debug('Getting', self.getSourceURL());
+                    self.saveStream()
+                        .then(() => resolve())
+                        .catch((err) => reject(err));
                 }).catch(reject);
             }
             catch (err) {

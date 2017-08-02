@@ -16,6 +16,23 @@ class EvernoteApp extends storage_1.Storage {
             china: false
         });
     }
+    initialize() {
+        let self = this;
+        this.log.debug('App initialize overrided');
+        return new Promise((resolve, reject) => {
+            try {
+                self.userStore().getPublicUserInfo(self.config.username)
+                    .then((userInfo) => {
+                    self.log.debug(userInfo);
+                    self.webApiUrlPrefix = userInfo.webApiUrlPrefix;
+                    super.initialize();
+                }).catch((err) => reject(err));
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
+    }
     noteStore() {
         return this.client.getNoteStore();
     }

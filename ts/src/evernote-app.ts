@@ -20,6 +20,8 @@ export class EvernoteApp extends Storage {
   // Public objects
   public config: any;
   public client: any;
+  public webApiUrlPrefix: string;
+
 
   public constructor( config: any ) {
     super();
@@ -32,6 +34,25 @@ export class EvernoteApp extends Storage {
       sandbox: false,
       china: false
     } );
+
+
+  }
+
+  public initialize(): Promise<any> {
+    let self = this;
+    this.log.debug( 'App initialize overrided' );
+    return new Promise( ( resolve, reject ) => {
+      try {
+        self.userStore().getPublicUserInfo( self.config.username )
+          .then( ( userInfo: any ) => {
+            self.log.debug( userInfo );
+            self.webApiUrlPrefix  = userInfo.webApiUrlPrefix;
+            super.initialize()
+          } ).catch( ( err: any ) => reject( err ) );
+      } catch( err ) {
+        reject( err );
+      }
+    });
 
 
   }
@@ -166,6 +187,7 @@ export class EvernoteApp extends Storage {
 
     } )
   }
+
 
 }
 

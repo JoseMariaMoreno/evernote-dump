@@ -5,7 +5,9 @@ export declare class EvernoteApp extends Storage {
     private _notebooks;
     config: any;
     client: any;
+    webApiUrlPrefix: string;
     constructor(config: any);
+    initialize(): Promise<any>;
     noteStore(): any;
     userStore(): any;
     user(): any;
